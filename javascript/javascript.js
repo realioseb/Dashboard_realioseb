@@ -1,4 +1,8 @@
 $(document).ready(function(){
+    /*
+     * The best drag and drop by ioseb bichinashvili
+     * Collaborator ioseb dzmanashvili
+     */
     $(document).on("mousedown", ".widget-header", function() {
         /*
          * mx aris mausis x koordinati (Mouse X)
@@ -12,7 +16,7 @@ $(document).ready(function(){
          * ex aris elementis x koordinati (element X)
          * ey aris elementis y koordinati (element Y)
          */
-        var widget = document.elementFromPoint(mx, my);
+        var widget = document.elementFromPoint(mx, my).parentNode;
         
         var ex = $(widget).offset().left;
         var ey = $(widget).offset().top;
@@ -23,10 +27,20 @@ $(document).ready(function(){
              */
             var newMX = event.pageX - mx;
             var newMY = event.pageY - my;
-            
+
             /*
-             * migebuli a(NewMX, NewMY) veqtorit shevcvalot elementis pozicia
+             * ganvsazgvrot elementis poziciis cvlileba
              */
+            var newEX = ex + newMX;
+            var newEY = ey + newMY;
+
+            /*
+             * vcvalot elementis pozicia
+             */
+            $(widget).offset({ top: newEY, left: newEX });
+        });
+        
+        $(document).on("mouseup", "mousemove", function() {
             
         });
     });
