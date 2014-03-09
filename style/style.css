@@ -13,30 +13,32 @@
     border: 2px solid black;
     min-width: 150px;
     max-width: 550px;
+    width: 450px;
+    height: 200px;
     margin: 5px 5px;
     resize: both;
-    overflow: auto;
+    overflow: hidden;
 }
 .widget-header
 {
+    background: red;
     position: static;
-    border: 2px solid red;
-    height: 20%;
+    height: 18%;
     padding: 3px;
     cursor: move;
 }
 .widget-content
 {
+    background: yellow;
     position: static;
-    height: 50%;
+    height: 56.5%;
     padding: 0.5%;
-    border: 2px solid yellow;
 }
 .widget-footer
 {
+    background: green;
     position: static;
-    border: 2px solid green;
-    height: 20%;
+    height: 18%;
     padding: 3px;
     padding: 0.5%;
 }
@@ -47,7 +49,6 @@
     width: 85px;
     height: 100%;
     padding: 0px;
-    cursor: default;
 }
 .widget-header-button
 {
