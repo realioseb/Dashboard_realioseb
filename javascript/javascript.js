@@ -12,12 +12,22 @@ $(document).ready(function(){
         var my = event.pageY;
         
         /*
-         * davitriet sachiro elementis koordinatebi:
-         * ex aris elementis x koordinati (element X)
-         * ey aris elementis y koordinati (element Y)
+         * davitriet sachiro elementi
          */
         var widget = document.elementFromPoint(mx, my).parentNode;
         
+        /*
+         * aviridot headershi arsebuli calkeuli elementebis monishvna
+         */
+        if(widget.className !== "widget") {
+            unset(widget);
+        }
+        
+        /*
+         * elementis koordinatebi
+         * ex aris elementis x koordinati (element X)
+         * ey aris elementis y koordinati (element Y)
+         */
         var ex = $(widget).offset().left;
         var ey = $(widget).offset().top;
         
@@ -40,8 +50,8 @@ $(document).ready(function(){
             $(widget).offset({ top: newEY, left: newEX });
         });
         
-        $(document).on("mouseup", "mousemove", function() {
-            
+        $(document).on("mouseup", widget, function() {
+            widget = null;
         });
     });
 });
