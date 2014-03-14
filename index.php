@@ -12,8 +12,8 @@
         
         <div class="column">
             <section class="widget">
-                <header class="widget-header">
-                    ვიჯეტის ჰედერი
+                <header class="widget-header" onmouseup="return false">
+                    <h1>ვიჯეტის ჰედერი</h1>
                     <form class="button-container">
                         <button type="button" class="widget-header-button" title="edit">O</button>
                         <button type="button" class="widget-header-button" title="minimize">_</button>
@@ -30,7 +30,7 @@
                 </footer>
             </section>
         </div>
-        <div class="column">
+        <div class="column" id="test">
             
         </div>
         <script src="javascript/jquery-1.10.2.min.js"></script>

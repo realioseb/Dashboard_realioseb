@@ -32,6 +32,13 @@
     padding: 3px;
     cursor: move;
 }
+.widget-header h1
+{
+    position: relative;
+    float: left;
+    font-size: 16px;
+    margin: 5px 0;
+}
 .widget-content
 {
     background: yellow;
@@ -49,8 +56,9 @@
 }
 .button-container
 {
-    float: right;
-    position: static;
+    position: absolute;
+    top: 1px;
+    right: 0;
     width: 85px;
     height: 100%;
     padding: 0px;
