@@ -13,9 +13,9 @@ $(document).ready(function(){
         var $mx = event.pageX;
         var $my = event.pageY;
         
-        if(typeof($mx) === "undefined" || typeof($my) === "undefined") {
-            $mx = $(document).scrollLeft() + $(window).width() - 1;
-            $my = $(document).scrollTop() + $(window).height() - 1;
+        if(typeof(event.pageX) === "undefined" || typeof(event.pageY) === "undefined") {
+            $mx = $(document).scrollLeft() + event.clientX - 1;
+            $my = $(document).scrollTop() + event.clientY - 1;
         }
         
         /*
@@ -43,7 +43,12 @@ $(document).ready(function(){
                  */
                 var $newMX = event.pageX - $mx;
                 var $newMY = event.pageY - $my;
-
+                
+                if(typeof(event.pageX) === "undefined" || typeof(event.pageY) === "undefined") {                    
+                    $newMX = $(document).scrollLeft() + event.clientX - 1 - $mx;
+                    $newMY = $(document).scrollLeft() + event.clientY - 1 - $my;
+                }
+                
                 /*
                  * ganvsazgvrot elementis poziciis cvlileba
                  */
