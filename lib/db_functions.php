@@ -147,13 +147,13 @@ class db_functions {
         $db = db_functions::db_Connect();
         
         $where = db_functions::setUpWhereStmt($conditions, $ao);
-        return "DELETE FROM {$table} WHERE {$where['where']}";
-//        $delete = $db->prepare("DELETE FROM {$table} WHERE {$where['where']}");
-//        $delete->execute($where['options']);
-//        
-//        $row = $delete->rowCount();
-//        
-//        return !!$row;
+        
+        $delete = $db->prepare("DELETE FROM {$table} WHERE {$where['where']}");
+        $delete->execute($where['options']);
+        
+        $row = $delete->rowCount();
+        
+        return !!$row;
     }
     
     public function db_query($query)
