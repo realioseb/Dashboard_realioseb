@@ -14,7 +14,7 @@ class db_functions {
         } else if (is_bool($andOR) && $andOR == false) {
             $andOR = "OR";
         } else {
-            return false;
+            return null;
         }
         
         return $andOR;
@@ -42,12 +42,12 @@ class db_functions {
             }
         }
         
-        $result = array('options' => $options, 'where' => $where);
+        $result = array('options' => $options, 'queryPart' => $where);
         
         return $result;
     }
     
-    private function setUpData($data)
+    private function setUpIntoStmt($data)
     {
         $fieldNames = array();
         $sqlValues = array();
@@ -68,7 +68,7 @@ class db_functions {
         
         $options = array_merge($fieldNames, $sqlValues);
         
-        $result = array('qMarks' => $questionMarks, 'options' => $options);
+        $result = array('options' => $options, 'queryPart' => $questionMarks);
         
         return $result;
     }
@@ -90,7 +90,7 @@ class db_functions {
             }
         }
         
-        $result = array('options' => $options, 'set' => $set);
+        $result = array('options' => $options, 'queryPart' => $set);
         
         return $result;
     }
@@ -101,7 +101,7 @@ class db_functions {
         
         $where = db_functions::setUpWhereStmt($conditions, $ao);
         
-        $select = $db->prepare("SELECT * FROM {$table} WHERE {$where['where']}");
+        $select = $db->prepare("SELECT * FROM {$table} WHERE {$where['queryPart']}");
         $select->execute($where['options']);
         
         
@@ -114,9 +114,9 @@ class db_functions {
     {
         $db = db_functions::db_Connect();
         
-        $data = db_functions::setUpData($data);
+        $data = db_functions::setUpIntoStmt($data);
         
-        $insert = $db->prepare("INSERT INTO $table ({$data['qMarks']}) VALUES ({$data['qMarks']})");
+        $insert = $db->prepare("INSERT INTO $table ({$data['queryPart']}) VALUES ({$data['queryPart']})");
         $insert->execute($data['options']);
         
         $rows = $insert->rowCount();
@@ -134,7 +134,7 @@ class db_functions {
         
         $options = array_merge($data['options'], $where['options']);
         
-        $update = $db->prepare("UPDATE {$table} SET {$where['where']} WHERE {$where['where']}");
+        $update = $db->prepare("UPDATE {$table} SET {$data['queryPart']} WHERE {$where['queryPart']}");
         $update->execute($options);
         
         $rows = $update->rowCount();
@@ -148,7 +148,7 @@ class db_functions {
         
         $where = db_functions::setUpWhereStmt($conditions, $ao);
         
-        $delete = $db->prepare("DELETE FROM {$table} WHERE {$where['where']}");
+        $delete = $db->prepare("DELETE FROM {$table} WHERE {$where['queryPart']}");
         $delete->execute($where['options']);
         
         $row = $delete->rowCount();
