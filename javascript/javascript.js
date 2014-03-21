@@ -1,3 +1,19 @@
+/*
+ * gadaecema html-s objecti
+ * abrunebs mis zeda marcxena da qveda marjvena wertilis koordinatebs
+ */
+function elemPosition(elem)
+{
+    var offset = elem.offset();
+    var top = offset.top;
+    var left = offset.left;
+    
+    var bottom = $(elem).height() + top;
+    var right = $(elem).width() + left;
+    
+    return {top: top, left: left, bottom: bottom, right: right};
+}
+
 $(document).ready(function(){
     /*
      * The best drag and drop by ioseb bichinashvili
@@ -10,13 +26,8 @@ $(document).ready(function(){
          * mx aris mausis x koordinati (Mouse X)
          * my aris mausis y koordinati (Mouse Y)
          */
-        var $mx = event.pageX;
-        var $my = event.pageY;
-        
-        if(typeof(event.pageX) === "undefined" || typeof(event.pageY) === "undefined") {
-            $mx = $(document).scrollLeft() + event.clientX - 1;
-            $my = $(document).scrollTop() + event.clientY - 1;
-        }
+        var $mx = $(document).scrollLeft() + event.clientX - 1;
+        var $my = $(document).scrollTop() + event.clientY - 1;
         
         /*
          * davitriet sachiro elementi
@@ -41,13 +52,8 @@ $(document).ready(function(){
                 /*
                  * ganvsazgvrot mausis cvlileba
                  */
-                var $newMX = event.pageX - $mx;
-                var $newMY = event.pageY - $my;
-                
-                if(typeof(event.pageX) === "undefined" || typeof(event.pageY) === "undefined") {                    
-                    $newMX = $(document).scrollLeft() + event.clientX - 1 - $mx;
-                    $newMY = $(document).scrollLeft() + event.clientY - 1 - $my;
-                }
+                var $newMX = $(document).scrollLeft() + event.clientX - 1 - $mx;
+                var $newMY = $(document).scrollLeft() + event.clientY - 1 - $my;
                 
                 /*
                  * ganvsazgvrot elementis poziciis cvlileba
@@ -63,6 +69,28 @@ $(document).ready(function(){
         });
         
         $(document).on("mouseup", $widget, function() {
+            
+            var $mouseX = $(document).scrollLeft() + event.clientX - 1;
+            var $mouseY = $(document).scrollLeft() + event.clientY - 1;
+            
+            /*
+             * avigot is sveti romelshic motavsebulia kursori
+             * da chavsvat vijetis
+             */
+            var $column;
+            $(".droppable").each(function() {
+                var coord = elemPosition($(this));
+                if ($mouseX > coord.left && $mouseX <= coord.right) {
+                    if ($mouseY < coord.bottom && $mouseY >= coord.top) {
+                        $column = this;
+                    }
+                }
+            });
+            
+            $($column).append($widget);
+            $($widget).css({top: 0, left: 0});
+            
+            
             /*
              * datreuli vijetis xelidan dagdeba
              */
