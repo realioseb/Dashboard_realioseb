@@ -1,4 +1,5 @@
 <?php
+
 class db_functions {
     private function db_Connect()
     {
@@ -7,22 +8,18 @@ class db_functions {
         return $db;
     }
     
-    private function setUpAndOr($andOR = true)
+    private function checkAndOr($con)
     {
-        if (is_bool($andOR) && $andOR == true) {
-            $andOR = "AND";
-        } else if (is_bool($andOR) && $andOR == false) {
-            $andOR = "OR";
-        } else {
-            return null;
+        if ($con == "and" || $con == "or") {
+            return $con;
         }
         
-        return $andOR;
+        return false;
     }
     
-    private function setUpWhereStmt($conditions, $ao = true)
+    private function setUpWhereStmt($conditions, $ao)
     {
-        $ao = db_functions::setUpAndOr($ao);
+        $ao = db_functions::checkAndOr($ao);
         if($ao == false) {
             return "error";
         }
@@ -31,14 +28,12 @@ class db_functions {
         $options = array();
         
         foreach ($conditions as $key => $value) {
-            $options[] = $key;
-            
             $options[] = $value;
             
             if ($where == "") {
-                $where = "? = ? ";
+                $where = "{$key} = ? ";
             } else {
-                $where .= " {$ao} ? = ?";
+                $where .= " {$ao} {$key} = ?";
             }
         }
         
@@ -50,14 +45,15 @@ class db_functions {
     private function setUpIntoStmt($data)
     {
         $fieldNames = array();
-        $sqlValues = array();
+        $options = array();
         
         $questionMarks = "";
+        $fields = "";
         
         foreach ($data as $key => $value) {
             $fieldNames[] = $key;
             
-            $sqlValues[] = $value;
+            $options[] = $value;
             
             if ($questionMarks == "") {
                 $questionMarks = "?";
@@ -66,9 +62,15 @@ class db_functions {
             }
         }
         
-        $options = array_merge($fieldNames, $sqlValues);
+        foreach ($fieldNames as $value) {
+            if ($fields == "") {
+                $fields = $value;
+            } else {
+                $fields .= ", {$value}";
+            }
+        }
         
-        $result = array('options' => $options, 'queryPart' => $questionMarks);
+        $result = array('options' => $options, 'fields' => $fields, 'queryPart' => $questionMarks);
         
         return $result;
     }
@@ -79,14 +81,12 @@ class db_functions {
         $options = array();
         
         foreach ($data as $key => $value) {
-            $options[] = $key;
-            
             $options[] = $value;
             
             if ($set == "") {
-                $set = "? = ?";
+                $set = "{$key} = ?";
             } else {
-                $set .= ", ? = ?";
+                $set .= ", {$key} = ?";
             }
         }
         
@@ -95,7 +95,7 @@ class db_functions {
         return $result;
     }
     
-    public function db_select($table, $conditions, $ao = true)
+    public function db_select($table, $conditions, $ao = "and")
     {
         $db = db_functions::db_Connect();
         
@@ -103,7 +103,6 @@ class db_functions {
         
         $select = $db->prepare("SELECT * FROM {$table} WHERE {$where['queryPart']}");
         $select->execute($where['options']);
-        
         
         $result = $select->fetchAll();
         
@@ -116,7 +115,7 @@ class db_functions {
         
         $data = db_functions::setUpIntoStmt($data);
         
-        $insert = $db->prepare("INSERT INTO $table ({$data['queryPart']}) VALUES ({$data['queryPart']})");
+        $insert = $db->prepare("INSERT INTO $table ({$data['fields']}) VALUES ({$data['queryPart']})");
         $insert->execute($data['options']);
         
         $rows = $insert->rowCount();
@@ -124,13 +123,13 @@ class db_functions {
         return !!$rows;
     }
     
-    public function db_update($table, $data, $conditions, $ao = true)
+    public function db_update($table, $data, $conditions, $ao = "and")
     {
         $db = db_functions::db_Connect();
         
         $data = db_functions::setUpSetStmt($data);
         
-        $where = db_functions::setUpWhereStmt($conditions, $ao);
+        $where = db_functions::setUpWhereStmt($conditions, $ao = "and");
         
         $options = array_merge($data['options'], $where['options']);
         
@@ -142,7 +141,7 @@ class db_functions {
         return !!$rows;
     }
     
-    public function db_delete($table, $conditions, $ao = true)
+    public function db_delete($table, $conditions, $ao = "and")
     {
         $db = db_functions::db_Connect();
         
