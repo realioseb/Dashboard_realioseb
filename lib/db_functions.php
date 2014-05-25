@@ -1,14 +1,14 @@
 <?php
 
 class db_functions {
-    private function db_Connect()
+    private static function db_Connect()
     {
         $db = new PDO('mysql:host=localhost;dbname=dashboard', 'root', '');
         
         return $db;
     }
     
-    private function checkAndOr($con)
+    private static function checkAndOr($con)
     {
         if ($con == "and" || $con == "or") {
             return $con;
@@ -17,7 +17,7 @@ class db_functions {
         return false;
     }
     
-    private function setUpWhereStmt($conditions, $ao)
+    private static function setUpWhereStmt($conditions, $ao)
     {
         $ao = db_functions::checkAndOr($ao);
         if($ao == false) {
@@ -42,7 +42,7 @@ class db_functions {
         return $result;
     }
     
-    private function setUpIntoStmt($data)
+    private static function setUpIntoStmt($data)
     {
         $fieldNames = array();
         $options = array();
@@ -75,7 +75,7 @@ class db_functions {
         return $result;
     }
     
-    private function setUpSetStmt($data)
+    private static function setUpSetStmt($data)
     {
         $set = "";
         $options = array();
@@ -95,7 +95,7 @@ class db_functions {
         return $result;
     }
     
-    public function db_select($table, $conditions, $ao = "and")
+    public static function db_select($table, $conditions, $ao = "and")
     {
         $db = db_functions::db_Connect();
         
@@ -109,7 +109,7 @@ class db_functions {
         return $result;
     }
     
-    public function db_insert($table, $data)
+    public static function db_insert($table, $data)
     {
         $db = db_functions::db_Connect();
         
@@ -123,7 +123,7 @@ class db_functions {
         return !!$rows;
     }
     
-    public function db_update($table, $data, $conditions, $ao = "and")
+    public static function db_update($table, $data, $conditions, $ao = "and")
     {
         $db = db_functions::db_Connect();
         
@@ -141,7 +141,7 @@ class db_functions {
         return !!$rows;
     }
     
-    public function db_delete($table, $conditions, $ao = "and")
+    public static function db_delete($table, $conditions, $ao = "and")
     {
         $db = db_functions::db_Connect();
         
@@ -155,7 +155,7 @@ class db_functions {
         return !!$row;
     }
     
-    public function db_query($query)
+    public static function db_query($query)
     {
         $db = db_functions::db_Connect();
         
