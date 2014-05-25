@@ -1,0 +1,87 @@
+{% extends "layout.twig" %}
+
+{% block login %}
+    <div class="navbar-collapse collapse">
+        <form class="navbar-form navbar-right" role="form">
+            <div class="form-group">
+                <input type="text" placeholder="User Name" class="form-control">
+            </div>
+            <div class="form-group">
+                <input type="password" placeholder="Password" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-info">Sign in</button>
+            <button type="button" class="btn btn-success" onclick="overlay();">Register</button>
+            <button type="button" class="btn btn-danger">?</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block register %}
+    <div id="reg-container">
+        <div id="reg-form">
+            <h2 style="font-family: serif; font-style: italic;"><strong>R e g i s t r a t i o n</strong></h2>
+            <h6>(Sweet as chocolate)</h6>
+            <div id="reg-response">
+                <table>
+                    <tr>
+                        <td class="form-control reg-title">
+                            Username:
+                        </td>
+                        <td class="reg-input">
+                            <input type="text" name="username" class="form-control" id="reg-username">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="form-control reg-title">
+                            E-mail:
+                        </td>
+                        <td class="reg-input">
+                            <input type="text" name="mail" class="form-control" id="reg-mail">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="form-control reg-title">
+                            Password:
+                        </td>
+                        <td class="reg-input">
+                            <input type="password" name="password" class="form-control" id="reg-password">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="form-control reg-title">
+                            Confirm Password:
+                        </td>
+                        <td class="reg-input">
+                            <input type="password" name="checkPassword" class="form-control" id="reg-confPword">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td id="reg-button-container">
+                            <button class="btn btn-success reg-button" type="submit" name="reg-submit" onclick="signUp();">Register</button>
+                            <button class="btn btn-danger reg-button" type="button" name="cancel" onclick="overlay(); return false;">Cancel</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-4 column">
+        first column
+    </div>
+    <div class="col-md-4 column">
+        second column
+    </div>
+    <div class="col-md-4 column">
+        third column
+    </div>
+{% endblock %}
+
+{% block customList %}
+    {% for widget in widgets %}
+        <li><a href="#">{{ widget.name }}</a></li>
+    {% endfor %}
+{% endblock %}
