@@ -10,3 +10,4 @@ $app->register(new Silex\Provider\DoctrineServiceProvider());
 $app->register(new Silex\Provider\ServiceControllerServiceProvider());
 
 $app->register(new \Dashboard\DashboardModule());
+$app->register(new \Database\DatabaseModule());

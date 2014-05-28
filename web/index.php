@@ -11,5 +11,6 @@ require __DIR__.'/../lib/db_functions.php';
 
 // routing
 $app->mount('/', new \Dashboard\DashboardModule());
+$app->mount('/', new \Database\DatabaseModule());
 
 $app->run();

@@ -1,14 +1,19 @@
 <?php
 
-class db_functions {
-    private static function db_Connect()
+namespace Database\Controller;
+
+use Silex\Application;
+
+class DatabaseManager
+{
+    private $db;
+
+    public function __construct(Application $app)
     {
-        $db = new PDO('mysql:host=localhost;dbname=dashboard', 'root', '');
-        
-        return $db;
+        $this->db = $app['db'];
     }
     
-    private static function checkAndOr($con)
+    private function checkAndOr($con)
     {
         if ($con == "and" || $con == "or") {
             return $con;
@@ -17,9 +22,10 @@ class db_functions {
         return false;
     }
     
-    private static function setUpWhereStmt($conditions, $ao)
+    private function setUpWhereStmt($conditions, $ao, Application $app)
     {
-        $ao = db_functions::checkAndOr($ao);
+        $ao = $app['database.abstraction']->checkAndOr($ao);
+        
         if($ao == false) {
             return "error";
         }
@@ -42,7 +48,7 @@ class db_functions {
         return $result;
     }
     
-    private static function setUpIntoStmt($data)
+    private function setUpIntoStmt($data)
     {
         $fieldNames = array();
         $options = array();
@@ -75,7 +81,7 @@ class db_functions {
         return $result;
     }
     
-    private static function setUpSetStmt($data)
+    private function setUpSetStmt($data)
     {
         $set = "";
         $options = array();
@@ -95,11 +101,11 @@ class db_functions {
         return $result;
     }
     
-    public static function db_select($table, $conditions, $ao = "and")
+    public function db_select($table, $conditions, Application $app, $ao = "and")
     {
-        $db = db_functions::db_Connect();
+        $db = $this->db;
         
-        $where = db_functions::setUpWhereStmt($conditions, $ao);
+        $where = $app['database.abstraction']->setUpWhereStmt($conditions, $ao, $app);
         
         $select = $db->prepare("SELECT * FROM {$table} WHERE {$where['queryPart']}");
         $select->execute($where['options']);
@@ -109,11 +115,11 @@ class db_functions {
         return $result;
     }
     
-    public static function db_insert($table, $data)
+    public function db_insert($table, $data, Application $app)
     {
-        $db = db_functions::db_Connect();
+        $db = $this->db;
         
-        $data = db_functions::setUpIntoStmt($data);
+        $data = $app['database.abstraction']->setUpIntoStmt($data);
         
         $insert = $db->prepare("INSERT INTO $table ({$data['fields']}) VALUES ({$data['queryPart']})");
         $insert->execute($data['options']);
@@ -123,13 +129,13 @@ class db_functions {
         return !!$rows;
     }
     
-    public static function db_update($table, $data, $conditions, $ao = "and")
+    public function db_update($table, $data, Application $app, $conditions, $ao = "and")
     {
-        $db = db_functions::db_Connect();
+        $db = $this->db;
         
-        $data = db_functions::setUpSetStmt($data);
+        $data = $app['database.abstraction']->setUpSetStmt($data);
         
-        $where = db_functions::setUpWhereStmt($conditions, $ao = "and");
+        $where = $app['database.abstraction']->setUpWhereStmt($conditions, $app, $ao);
         
         $options = array_merge($data['options'], $where['options']);
         
@@ -141,11 +147,11 @@ class db_functions {
         return !!$rows;
     }
     
-    public static function db_delete($table, $conditions, $ao = "and")
+    public function db_delete($table, $conditions, Application $app, $ao = "and")
     {
-        $db = db_functions::db_Connect();
+        $db = $app['database.abstraction']->db_Connect();
         
-        $where = db_functions::setUpWhereStmt($conditions, $ao);
+        $where = $app['database.abstraction']->setUpWhereStmt($conditions, $app, $ao);
         
         $delete = $db->prepare("DELETE FROM {$table} WHERE {$where['queryPart']}");
         $delete->execute($where['options']);
@@ -155,9 +161,9 @@ class db_functions {
         return !!$row;
     }
     
-    public static function db_query($query)
+    public function db_query($query, Application $app)
     {
-        $db = db_functions::db_Connect();
+        $db = $this->db;
         
         $qry = $db->prepare($query);
         $qry->execute();
@@ -165,4 +171,5 @@ class db_functions {
         
         return $result;
     }
+
 }
