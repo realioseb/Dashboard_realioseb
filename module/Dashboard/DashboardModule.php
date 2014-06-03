@@ -23,9 +23,10 @@ class DashboardModule implements \Silex\ServiceProviderInterface, \Silex\Control
     {
         $controllers = $app['controllers_factory'];
         
-        $controllers->match("/test", "dashboard.manager:test")->bind('test');
         $controllers->match("/", "dashboard.manager:dashboard")->bind('dashboard'); 
-        $controllers->match("/register", "dashboard.manager:register")->bind('register'); 
+        $controllers->match("/register", "dashboard.manager:register")->bind('register');
+        $controllers->match("/login", "dashboard.manager:login")->bind('login');
+        $controllers->match("/widget/{id}", "dashboard.manager:widget");
         
         return $controllers;
     }
