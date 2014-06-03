@@ -15,35 +15,37 @@
 {
     position: relative;
     border: 2.5px solid black;
-    width: 363px;
-    height: 200px;
+    width: 100%;
+    margin-bottom: 15px;
 }
 .widget-header
 {
-    background: red;
     position: static;
+    min-height: 25px;
     height: 18%;
     padding: 3px;
     cursor: move;
+    border-bottom: 1px solid black;
 }
 .widget-header h1
 {
     position: relative;
     float: left;
     font-size: 16px;
-    margin: 5px 0;
+    margin: 0;
 }
 .widget-content
 {
-    background: yellow;
     position: static;
+    min-height: 30px;
     height: 64%;
     padding: 0.5%;
+    border-bottom: 1px solid black;
 }
 .widget-footer
 {
-    background: green;
     position: static;
+    min-height: 25px;
     height: 18%;
     padding: 3px;
     padding: 0.5%;
@@ -51,17 +53,23 @@
 .button-container
 {
     position: absolute;
-    top: 1px;
+    top: 0;
     right: 0;
-    width: 85px;
     padding: 0px;
+    color: black;
 }
 .widget-header-button
 {
     position: relative;
+    float: left;
     width: 25px;
     height: 25px;
-    font-weight: bold;
+    margin: 0px;
+    padding: 0;
+    margin-left: 2px;
+    border-radius: 0;
+    line-height: 0.5;
+    text-align: center;
 }
 #widget-list
 {
@@ -167,6 +175,8 @@
 }
 .column
 {
+    position: relative;
+    padding: 5px;
     display: block;
     height: 100%;
     border-right: 2px solid silver;
@@ -183,4 +193,32 @@
     background-color: #e9e9e9;
     border-color: silver;
     color: black;
+}
+.error-message
+{
+    display: none;
+    font-size: 9px;
+    color: red;
+}
+.main
+{
+    padding: 0;
+    position: absolute;
+    bottom: 0;
+    top: 50px;
+}
+.widget-shadow
+{
+    position: relative;
+    border: 1px dashed red;
+    margin-bottom: 15px;
+}
+body
+{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
