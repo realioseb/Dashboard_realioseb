@@ -16,52 +16,76 @@ function sideBarMaximizeMinimize(evt) {
 // check username input
 function checkUsername(evt) {
     var value = evt.value;
-    
     var check = value.match(/^[a-z0-9_-]{4,20}$/);
+    var result;
     
     if(check) {
         evt.style.border = "1px solid green";
+        document.getElementById("reg-username-msg").style.display = "none";
+        result = true;
     } else {
         evt.style.border = "1px solid red";
+        document.getElementById("reg-username-msg").style.display = "table-row";
+        result = false;
     }
+    
+    return result;
 }
 
 // check email input
 function checkMail(evt) {
     var value = evt.value;
-    
     var check = value.match(/^([a-zA-Z0-9._-]+)[@](\w+)[.](\w+)$/);
+    var result;
     
     if(check) {
         evt.style.border = "1px solid green";
+        document.getElementById("reg-mail-msg").style.display = "none";
+        result = true;
     } else {
         evt.style.border = "1px solid red";
+        document.getElementById("reg-mail-msg").style.display = "table-row";
+        result = false;
     }
+    
+    return result;
 }
 
 // check password input
 function checkPassword(evt) {
     var value = evt.value;
-    
     var check = value.match(/^.{8,64}$/);
+    var result;
     
     if(check) {
         evt.style.border = "1px solid green";
+        document.getElementById("reg-password-msg").style.display = "none";
+        result = true;
     } else {
         evt.style.border = "1px solid red";
+        document.getElementById("reg-password-msg").style.display = "table-row";
+        result = false;
     }
+    
+    return result;
 }
 
-function confirmPassword(evt) {
+function checkConfirmPassword(evt) {
     var thisValue = evt.value;
-    
     var passValue = document.getElementById("reg-password").value;
+    var result;
     
-    if(thisValue === passValue) {
+    if(thisValue.length !== 0 && thisValue === passValue) {
         evt.style.border = "1px solid green";
+        document.getElementById("reg-check-msg").style.display = "none";
+        result = true;
     } else {
         evt.style.border = "1px solid red";
+        document.getElementById("reg-check-msg").style.display = "table-row";
+        result = false;
     }
+    
+    return result;
 }
 
 // show/hide registration form
@@ -76,73 +100,228 @@ function overlay() {
 function signUp() {
     var xmlhttp = (new XMLHttpRequest) || (new ActiveXObject);
     
-    var username = document.getElementById("reg-username").value;
-    var mail = document.getElementById("reg-mail").value;
-    var password = document.getElementById("reg-password").value;
-    var confirmPassword = document.getElementById("reg-confPword").value;
+    var username = document.getElementById("reg-username");
+    var a = checkUsername(username);
     
-    xmlhttp.open("POST", "index.php/register", true);
-    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xmlhttp.send("uname=" + username + "&mail=" + mail + "&password=" + password + "&checkPassword=" + confirmPassword);
+    var mail = document.getElementById("reg-mail");
+    var b = checkMail(mail);
+    
+    var password = document.getElementById("reg-password");
+    var c = checkPassword(password);
+    
+    var confirmPassword = document.getElementById("reg-confPword");
+    var d = checkConfirmPassword(confirmPassword);
+    
+    if(a && b && c && d) {
+        xmlhttp.open("POST", "index.php/register", true);
+        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xmlhttp.send("uname=" + username.value + "&mail=" + mail.value + "&password="
+                        + password.value + "&checkPassword=" + confirmPassword.value);
+
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                var status = JSON.parse(xmlhttp.response);
+
+                var msg = "";
+
+                if(status === '1') {
+                    msg = "<span style='color: red;'>Congratulations!</span> You have registered successfully<br>\n\
+                            <a href='#'>Click here</a> to sign in automatically<br>\n\
+                            Or <a onclick='overlay();' style='cursor: pointer;'>close</a> this form";
+                } else if(status === '2') {
+                    msg = "<span style='color: red;'>Username is already taken.</span><br>\n\
+                            Please, <a onclick='this.parentNode.innerHTML = registration;' style='cursor: pointer;'>try again</a> or<br>\n\
+                            <a onclick='overlay();' style='cursor: pointer;'>Close this form</a>";
+                } else if(status === '3') {
+                    msg = "<span style='color: red;'>Password did not match!</span><br>\n\
+                            Please, <a onclick='this.parentNode.innerHTML = registration;' style='cursor: pointer;'>try again</a> or<br>\n\
+                            <a onclick='overlay();' style='cursor: pointer;'>Close this form</a>";
+                } else {
+                    msg = "<span style='color: red;'>Sorry... Something went wrong</span><br>\n\
+                            Please, <a onclick='this.parentNode.innerHTML = registration;' style='cursor: pointer;'>try again</a> or<br>\n\
+                            <a onclick='overlay();' style='cursor: pointer;'>Close this form</a>";
+                }
+
+                document.getElementById("reg-response").innerHTML = msg;
+            }
+        };
+    } else {
+        confirm("There are errors, please recorret them!");
+    }
+}
+
+function signIn() {
+    event.preventDefault();
+    
+    var xmlhttp = (new XMLHttpRequest) || (new ActiveXObject);
+    
+    var username = document.getElementById("sign-username").value;
+    var password = document.getElementById("sign-password").value;
+
+    xmlhttp.open("POST", "index.php/login", true);
+    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xmlhttp.send("uname=" + username + "&password=" + password);
     
     xmlhttp.onreadystatechange = function() {
-        var status = JSON.parse(xmlhttp.response);
-        
-        var msg = "";
-        
-        if(status === 1) {
-            msg = "<span style='color: red;'>Congratulations!</span> You have registered successfully<br>\n\
-                    <a href='#'>Click here</a> to sign in automatically<br>\n\
-                    Or <a onclick='overlay();' style='cursor: pointer;'>close</a> this form";
-        } else if(status === 2) {
-            msg = "<span style='color: red;'>Username is already taken.</span><br>\n\
-                    Please, <a onclick='this.parentNode.innerHTML = registration;' style='cursor: pointer;'>try again</a> or<br>\n\
-                    <a onclick='overlay();' style='cursor: pointer;'>Close this form</a>";
-        } else if(status === 3) {
-            msg = "<span style='color: red;'>Password did not match!</span><br>\n\
-                    Please, <a onclick='this.parentNode.innerHTML = registration;' style='cursor: pointer;'>try again</a> or<br>\n\
-                    <a onclick='overlay();' style='cursor: pointer;'>Close this form</a>";
-        } else {
-            msg = "<span style='color: red;'>Sorry... Something went wrong</span><br>\n\
-                    Please, <a onclick='this.parentNode.innerHTML = registration;' style='cursor: pointer;'>try again</a> or<br>\n\
-                    <a onclick='overlay();' style='cursor: pointer;'>Close this form</a>";
+        if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+            var status = JSON.parse(xmlhttp.response);
+
+            if(status === '1') {
+                location.reload();
+            } else {
+                alert("zdaa");
+            }
         }
-        
-        document.getElementById("reg-response").innerHTML = msg;
     };
 }
 
+function hasClassName(domNode, className) {
+    var names = domNode.className.split(" ");
+    
+    for(var i = 0; i<names.length; i++) {
+        if(names[i] === className) {
+            return true;
+        }
+    }
+    
+    return false;
+}
 
+function closeWidget (e) {
+    e = e || window.event;
+    var source = e.target || e.srcElement;
 
+    if(hasClassName(source, "remove")) {
+        this.parentNode.removeChild(this);
+    }
+}
 
+function renderWidget() {
+    var html = document.getElementById("w-tpl").innerHTML;
+    var temp = document.createElement("div");
+    temp.innerHTML = html.trim();
+    var widget = temp.firstChild;
+    
+    var column = document.getElementsByClassName("column")[0];
+    column.appendChild(widget);
+    
+    return widget;
+}
 
+var list = document.getElementById("widget-list");
+list.onclick = function loadWidget(e) {    
+    e = e || window.event;
+    var source = e.target || e.srcElement;
+    
+    if(source.className === "widget-item") {
+        var widget = renderWidget();
+        
+        var client = new XMLHttpRequest();
+        
+        client.open("GET", source.href, false);
+        
+        client.onreadystatechange = function() {
+            var option = JSON.parse(this.responseText);
+            
+            widget.getElementsByClassName("widget-header-text")[0].innerHTML = option.header;
+            widget.getElementsByClassName("widget-content")[0].innerHTML = option.content;
+            widget.getElementsByClassName("widget-footer")[0].innerHTML = option.footer;
+        };
+        
+        widget.onclick = closeWidget;
+        
+        client.send(null);
+    }
+    
+    return false;
+};
 
+function insertBetween(elem, column) {
+    var event = event || window.event;
+}
 
+var content = document.getElementById("widget-container");
+content.onmousedown = function(event) {
+    event = event || window.event;
+    var source = event.target || event.srcElement;
+    
+    if(source.className === "widget-header" || source.parentNode.className === "widget-header") {
+        var mouseIsDown = true;
+        
+        while (source.className !== "widget" && source !== this) {
+            source = source.parentNode;
+        }
 
+        if(source.className === "widget") {
+            var srcRectangle = source.getBoundingClientRect();
 
+            var srcX = srcRectangle.left;
+            var srcY = srcRectangle.top;
 
+            var srcWidth = srcRectangle.right - srcRectangle.left;
+            var srcHeight = srcRectangle.bottom - srcRectangle.top;
 
+            var mouseX = event.pageX || event.clientX;
+            var mouseY = event.pageY || event.clientY;
+            
+            var div = document.createElement("div");
+            
+            div.className = "widget-shadow";
+            div.style.width = srcWidth + "px";
+            div.style.height = srcHeight + "px";
+            
+            source.parentNode.replaceChild(div, source);
+            document.body.appendChild(source);
+            
+            source.style.position = "absolute";
+            source.style.width = srcWidth + "px";
+            source.style.left = srcX + "px";
+            source.style.top = srcY + "px";
+            source.style.zIndex = "6000";
+            
+            document.onmousemove = function(event) {
+                if(mouseIsDown) {
+                    event = event || window.event;
 
+                    var changeX = (event.pageX || event.clientX) - mouseX;
+                    var changeY = (event.pageY || event.clientY) - mouseY;
 
+                    var srcChangeX = srcX + changeX;
+                    var srcChangeY = srcY + changeY;
 
+                    source.style.left = srcChangeX + "px";
+                    source.style.top = srcChangeY + "px";
+                    
+                    var cl;
+                    var cl2 = document.getElementById("column-2");
+                    var cl3 = document.getElementById("column-3");
+                    
+                    if(event.pageX > cl3.getBoundingClientRect().left) {
+                        cl = cl3;
+                    } else if(event.pageX > cl2.getBoundingClientRect().left) {
+                        cl = cl2;
+                    } else {
+                        cl = document.getElementById("column-1");
+                    }
+                    
+                    cl.appendChild(div);
+                    
+                    insertBetween(div, cl);
+                }
+            };
 
-
-//function signIn() {
-//    var xmlhttp = (new XMLHttpRequest) || (new ActiveXObject);
-//    
-//    var username = document.getElementById("sign-username").value;
-//    var password = document.getElementById("sign-password").value;
-//
-//    xmlhttp.open("POST", "index.php/sign", true);
-//    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-//    xmlhttp.send("uname=" + username + "&password=" + password);
-//    
-//    xmlhttp.onreadystatechange=function()
-//    {
-//        var result = JSON.parse(xmlhttp.responseText);
-//    };
-//}
-
+            source.onmouseup = function() {
+                if(mouseIsDown) {
+                    div.parentNode.replaceChild(source, div);
+                    source.style.position = "relative";
+                    source.style.top = "0px";
+                    source.style.left = "0px";
+                    mouseIsDown = false;
+                }
+            };
+        }
+    }
+};
 
 //    <!DOCTYPE html>
 //    <html>
