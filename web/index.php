@@ -7,7 +7,6 @@ $app = new Silex\Application();
 // required files
 require __DIR__.'/../app/config.php';
 require __DIR__.'/../app/app.php';
-require __DIR__.'/../lib/db_functions.php';
 
 // routing
 $app->mount('/', new \Dashboard\DashboardModule());
