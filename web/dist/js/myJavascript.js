@@ -1,4 +1,5 @@
 var registration = document.getElementById("reg-response").innerHTML;
+event = event || window.event;
 
 // minimize and maximize left sidebar
 function sideBarMaximizeMinimize(evt) {
@@ -187,12 +188,22 @@ function hasClassName(domNode, className) {
     return false;
 }
 
-function closeWidget (e) {
+function widgetButtonActions (e) {
     e = e || window.event;
     var source = e.target || e.srcElement;
 
     if(hasClassName(source, "remove")) {
         this.parentNode.removeChild(this);
+    }
+    
+    if(hasClassName(source, "minimize")) {
+        var children = this.children;
+        
+        source.innerHTML = (source.innerHTML === "▼") ? "▲" : "▼";
+
+        for(var i = 1; i<children.length; i++) {
+            children[i].style.display = (children[i].style.display === "none") ? "block" : "none";
+        }
     }
 }
 
@@ -228,7 +239,7 @@ list.onclick = function loadWidget(e) {
             widget.getElementsByClassName("widget-footer")[0].innerHTML = option.footer;
         };
         
-        widget.onclick = closeWidget;
+        widget.onclick = widgetButtonActions;
         
         client.send(null);
     }
@@ -236,8 +247,28 @@ list.onclick = function loadWidget(e) {
     return false;
 };
 
-function insertBetween(elem, column) {
-    var event = event || window.event;
+function insertByPosition(elem, column) {
+    var children = column.childNodes;
+    var mouseY = event.pageY;
+    var scrollY = document.body.scrollTop;
+    
+    for(var i = 1; i < children.length; i++) {
+        var child = children[i];
+        var childTop = child.getBoundingClientRect().top + scrollY;
+        var childBottom = child.getBoundingClientRect().bottom + scrollY;
+        var margin = window.getComputedStyle(child).marginBottom || child.currentStyle.marginBottom;
+        margin = parseInt(margin, 10);
+        
+        if(mouseY < column.firstElementChild.getBoundingClientRect().top + scrollY) {
+            src = column.firstElementChild;
+        } else if(mouseY > column.lastElementChild.getBoundingClientRect().bottom + scrollY) {
+            src = column.lastElementChild;
+        }
+        if(mouseY < childBottom + scrollY && mouseY > (childTop - margin)) {
+            src = child;
+        }
+    }
+    column.insertBefore(elem, src);
 }
 
 var content = document.getElementById("widget-container");
@@ -251,19 +282,18 @@ content.onmousedown = function(event) {
         while (source.className !== "widget" && source !== this) {
             source = source.parentNode;
         }
-
+        
         if(source.className === "widget") {
             var srcRectangle = source.getBoundingClientRect();
 
-            var srcX = srcRectangle.left;
-            var srcY = srcRectangle.top;
+            var srcX = srcRectangle.left + document.body.scrollLeft;
+            var srcY = srcRectangle.top + document.body.scrollTop;
 
             var srcWidth = srcRectangle.right - srcRectangle.left;
             var srcHeight = srcRectangle.bottom - srcRectangle.top;
 
-            var mouseX = event.pageX || event.clientX;
-            var mouseY = event.pageY || event.clientY;
-            
+            var mouseX = event.pageX || (document.body.scrollLeft + event.clientX);
+            var mouseY = event.pageY || (document.body.scrollTop + event.clientY);
             var div = document.createElement("div");
             
             div.className = "widget-shadow";
@@ -283,8 +313,10 @@ content.onmousedown = function(event) {
                 if(mouseIsDown) {
                     event = event || window.event;
 
-                    var changeX = (event.pageX || event.clientX) - mouseX;
-                    var changeY = (event.pageY || event.clientY) - mouseY;
+                    var changeX = event.pageX || (document.body.scrollLeft + event.clientX);
+                    changeX -= mouseX;
+                    var changeY = event.pageY || (document.body.scrollTop + event.clientY);
+                    changeY -= mouseY;
 
                     var srcChangeX = srcX + changeX;
                     var srcChangeY = srcY + changeY;
@@ -306,7 +338,7 @@ content.onmousedown = function(event) {
                     
                     cl.appendChild(div);
                     
-                    insertBetween(div, cl);
+                    insertByPosition(div, cl);
                 }
             };
 
@@ -314,8 +346,10 @@ content.onmousedown = function(event) {
                 if(mouseIsDown) {
                     div.parentNode.replaceChild(source, div);
                     source.style.position = "relative";
+                    source.style.width = "100%";
                     source.style.top = "0px";
                     source.style.left = "0px";
+                    source.style.zIndex = "0";
                     mouseIsDown = false;
                 }
             };
